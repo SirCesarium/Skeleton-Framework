@@ -1,0 +1,13 @@
+{
+  "itemGroup.skeletonframework": "Example Mod Tab",
+  "block.skeletonframework.example_block": "Example Block",
+  "item.skeletonframework.example_item": "Example Item",
+
+  "skeletonframework.configuration.title": "Skeleton Framework Configs",
+  "skeletonframework.configuration.section.skeletonframework.common.toml": "Skeleton Framework Configs",
+  "skeletonframework.configuration.section.skeletonframework.common.toml.title": "Skeleton Framework Configs",
+  "skeletonframework.configuration.items": "Item List",
+  "skeletonframework.configuration.logDirtBlock": "Log Dirt Block",
+  "skeletonframework.configuration.magicNumberIntroduction": "Magic Number Text",
+  "skeletonframework.configuration.magicNumber": "Magic Number"
+}
