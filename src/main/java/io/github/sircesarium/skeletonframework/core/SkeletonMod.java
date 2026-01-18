@@ -1,10 +1,12 @@
 package io.github.sircesarium.skeletonframework.core;
 
 import io.github.sircesarium.skeletonframework.SkeletonFramework;
+import io.github.sircesarium.skeletonframework.core.annotation.block.SkeletonBlock;
 import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
 import io.github.sircesarium.skeletonframework.core.reflection.AnnotationScanHelper;
 import io.github.sircesarium.skeletonframework.core.reflection.ReflectionProcessor;
 import io.github.sircesarium.skeletonframework.core.reflection.resolver.FieldResolver;
+import io.github.sircesarium.skeletonframework.core.visitor.SkeletonBlockVisitor;
 import io.github.sircesarium.skeletonframework.core.visitor.SkeletonItemVisitor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -24,6 +26,11 @@ public class SkeletonMod {
         processor.process(
                 scanner.find(SkeletonItem.class, ElementType.FIELD),
                 new SkeletonItemVisitor(eventBus, container)
+        );
+
+        processor.process(
+                scanner.find(SkeletonBlock.class, ElementType.FIELD),
+                new SkeletonBlockVisitor(eventBus, container)
         );
     }
 
