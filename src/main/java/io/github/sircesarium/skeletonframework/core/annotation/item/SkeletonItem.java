@@ -1,4 +1,4 @@
-package com.skeletonframework.core.annotation.item;
+package io.github.sircesarium.skeletonframework.core.annotation.item;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

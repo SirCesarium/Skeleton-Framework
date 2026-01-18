@@ -1,7 +1,7 @@
-package com.skeletonframework.core.reflection;
+package io.github.sircesarium.skeletonframework.core.reflection;
 
-import com.skeletonframework.core.reflection.base.ReflectionVisitor;
-import com.skeletonframework.core.reflection.base.ReflectiveResolver;
+import io.github.sircesarium.skeletonframework.core.reflection.base.ReflectionVisitor;
+import io.github.sircesarium.skeletonframework.core.reflection.base.ReflectiveResolver;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 
 import java.util.stream.Stream;

@@ -1,11 +1,11 @@
-package com.skeletonframework.core;
+package io.github.sircesarium.skeletonframework.core;
 
-import com.skeletonframework.SkeletonFramework;
-import com.skeletonframework.core.annotation.item.SkeletonItem;
-import com.skeletonframework.core.reflection.AnnotationScanHelper;
-import com.skeletonframework.core.reflection.ReflectionProcessor;
-import com.skeletonframework.core.reflection.resolver.FieldResolver;
-import com.skeletonframework.core.visitor.SkeletonItemVisitor;
+import io.github.sircesarium.skeletonframework.SkeletonFramework;
+import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
+import io.github.sircesarium.skeletonframework.core.reflection.AnnotationScanHelper;
+import io.github.sircesarium.skeletonframework.core.reflection.ReflectionProcessor;
+import io.github.sircesarium.skeletonframework.core.reflection.resolver.FieldResolver;
+import io.github.sircesarium.skeletonframework.core.visitor.SkeletonItemVisitor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;

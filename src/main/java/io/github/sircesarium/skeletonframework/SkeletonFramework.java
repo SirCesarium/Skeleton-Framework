@@ -1,6 +1,6 @@
-package com.skeletonframework;
+package io.github.sircesarium.skeletonframework;
 
-import com.skeletonframework.core.SkeletonMod;
+import io.github.sircesarium.skeletonframework.core.SkeletonMod;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;

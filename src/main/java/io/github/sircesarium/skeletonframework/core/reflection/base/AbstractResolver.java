@@ -1,6 +1,6 @@
-package com.skeletonframework.core.reflection.base;
+package io.github.sircesarium.skeletonframework.core.reflection.base;
 
-import com.skeletonframework.core.error.SkeletonReflectionException;
+import io.github.sircesarium.skeletonframework.core.error.SkeletonReflectionException;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 
 public abstract class AbstractResolver {

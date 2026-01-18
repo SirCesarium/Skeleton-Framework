@@ -1,4 +1,4 @@
-package com.skeletonframework.core.error;
+package io.github.sircesarium.skeletonframework.core.error;
 
 public class SkeletonReflectionException extends RuntimeException {
     public SkeletonReflectionException(String message) {

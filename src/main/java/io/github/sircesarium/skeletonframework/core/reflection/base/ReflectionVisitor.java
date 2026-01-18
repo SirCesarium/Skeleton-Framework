@@ -1,4 +1,4 @@
-package com.skeletonframework.core.reflection.base;
+package io.github.sircesarium.skeletonframework.core.reflection.base;
 
 import net.neoforged.neoforgespi.language.ModFileScanData;
 

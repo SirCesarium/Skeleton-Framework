@@ -1,8 +1,8 @@
-package com.skeletonframework.core.visitor;
+package io.github.sircesarium.skeletonframework.core.visitor;
 
-import com.skeletonframework.core.annotation.item.SkeletonItem;
-import com.skeletonframework.core.error.SkeletonReflectionException;
-import com.skeletonframework.core.reflection.base.ReflectionVisitor;
+import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
+import io.github.sircesarium.skeletonframework.core.error.SkeletonReflectionException;
+import io.github.sircesarium.skeletonframework.core.reflection.base.ReflectionVisitor;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
