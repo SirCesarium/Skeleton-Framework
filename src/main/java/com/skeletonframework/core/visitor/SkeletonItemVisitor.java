@@ -13,11 +13,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Supplier;
 
-public final class SkeletonItemVisitor implements ReflectionVisitor {
+public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
 
     private final DeferredRegister<Item> itemRegister;
 
@@ -52,23 +51,6 @@ public final class SkeletonItemVisitor implements ReflectionVisitor {
                     "Cannot access @SkeletonItem field: " + field.getName(), e
             );
         }
-    }
-
-    @Override
-    public void visit(Method method, ModFileScanData.AnnotationData data) {
-        throw new SkeletonReflectionException(
-                "@SkeletonItem cannot be applied to methods: "
-                        + method.getDeclaringClass().getName()
-                        + "#" + method.getName()
-        );
-    }
-
-    @Override
-    public void visit(Class<?> clazz, ModFileScanData.AnnotationData data) {
-        throw new SkeletonReflectionException(
-                "@SkeletonItem cannot be applied to classes: "
-                        + clazz.getName()
-        );
     }
 
     private void validateField(Field field) {
