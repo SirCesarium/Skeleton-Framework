@@ -3,7 +3,6 @@ package io.github.sircesarium.skeletonframework.core.visitor;
 import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
 import io.github.sircesarium.skeletonframework.core.error.SkeletonReflectionException;
 import io.github.sircesarium.skeletonframework.core.reflection.base.ReflectionVisitor;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -17,10 +16,10 @@ import java.util.function.Supplier;
 
 public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
 
-    private final DeferredRegister<Item> itemRegister;
+    private final DeferredRegister.Items itemRegister;
 
     public SkeletonItemVisitor(IEventBus eventBus, ModContainer container) {
-        this.itemRegister = DeferredRegister.create(Registries.ITEM, container.getModId());
+        this.itemRegister = DeferredRegister.createItems(container.getModId());
         this.itemRegister.register(eventBus);
     }
 
