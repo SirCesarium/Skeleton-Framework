@@ -2,6 +2,7 @@ package io.github.sircesarium.skeletonframework.core;
 
 import io.github.sircesarium.skeletonframework.SkeletonFramework;
 import io.github.sircesarium.skeletonframework.core.annotation.block.SkeletonBlock;
+import io.github.sircesarium.skeletonframework.core.annotation.generic.SkeletonBootstrap;
 import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
 import io.github.sircesarium.skeletonframework.core.reflection.AnnotationScanHelper;
 import io.github.sircesarium.skeletonframework.core.reflection.ReflectionProcessor;
@@ -18,6 +19,10 @@ import java.lang.reflect.Field;
 public class SkeletonMod {
     public static void bootstrap(IEventBus eventBus, ModContainer container) {
         AnnotationScanHelper scanner = new AnnotationScanHelper(container);
+
+        boolean shouldSkip = scanner.find(SkeletonBootstrap.class, ElementType.TYPE).findAny().isEmpty();
+
+        if (shouldSkip) return;
 
         FieldResolver fieldResolver = new FieldResolver();
 
