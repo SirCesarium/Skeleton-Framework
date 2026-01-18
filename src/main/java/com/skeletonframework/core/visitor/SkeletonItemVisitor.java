@@ -2,7 +2,6 @@ package com.skeletonframework.core.visitor;
 
 import com.skeletonframework.core.annotation.item.SkeletonItem;
 import com.skeletonframework.core.error.SkeletonReflectionException;
-
 import com.skeletonframework.core.reflection.base.ReflectionVisitor;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
@@ -28,16 +27,30 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
     @Override
     public void visit(Field field, ModFileScanData.AnnotationData data) {
         SkeletonItem annotation = field.getAnnotation(SkeletonItem.class);
-
         validateField(field);
 
         try {
             Object value = field.get(null);
 
-            if (value instanceof Supplier<?> supplier) {
-                register(annotation, () -> (Item) supplier.get());
-            } else if (value instanceof Item item) {
-                register(annotation, () -> item);
+            Supplier<Item> supplier;
+
+            if (value instanceof Supplier<?> sup) {
+                supplier = () -> (Item) sup.get();
+            } else if (Item.class.isAssignableFrom(field.getType())) {
+                supplier = () -> {
+                    try {
+                        Object v = field.get(null);
+                        if (v == null) {
+                            Item instance = new Item(new Item.Properties());
+                            field.set(null, instance);
+                            return instance;
+                        } else {
+                            return (Item) v;
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                };
             } else {
                 throw new SkeletonReflectionException(
                         "@SkeletonItem field must be Item or Supplier<Item>: "
@@ -45,6 +58,8 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
                                 + "#" + field.getName()
                 );
             }
+
+            register(annotation, supplier);
 
         } catch (IllegalAccessException e) {
             throw new SkeletonReflectionException(
