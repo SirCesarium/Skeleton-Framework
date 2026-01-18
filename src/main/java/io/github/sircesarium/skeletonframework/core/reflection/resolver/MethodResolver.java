@@ -1,13 +1,14 @@
-package com.skeletonframework.core.reflection.resolver;
+package io.github.sircesarium.skeletonframework.core.reflection.resolver;
 
-import com.skeletonframework.core.error.SkeletonReflectionException;
-import com.skeletonframework.core.reflection.base.ReflectiveResolver;
-import com.skeletonframework.core.reflection.base.AbstractResolver;
+import io.github.sircesarium.skeletonframework.core.error.SkeletonReflectionException;
+import io.github.sircesarium.skeletonframework.core.reflection.base.ReflectiveResolver;
+import io.github.sircesarium.skeletonframework.core.reflection.base.AbstractResolver;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+@SuppressWarnings("unused")
 public final class MethodResolver extends AbstractResolver
         implements ReflectiveResolver<Method> {
 
