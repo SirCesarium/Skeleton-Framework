@@ -7,7 +7,11 @@ public abstract class AbstractResolver {
 
     protected Class<?> resolveClass(ModFileScanData.AnnotationData data) {
         try {
-            return Class.forName(data.clazz().getClassName());
+            return Class.forName(
+                    data.clazz().getClassName(),
+                    false,
+                    Thread.currentThread().getContextClassLoader()
+            );
         } catch (ClassNotFoundException e) {
             throw new SkeletonReflectionException(
                     "Class not found: " + data.clazz().getClassName(), e
