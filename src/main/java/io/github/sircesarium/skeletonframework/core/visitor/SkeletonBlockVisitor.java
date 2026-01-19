@@ -38,20 +38,19 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
 
             if (value instanceof Supplier<?> sup) {
                 blockSupplier = () -> castBlock(sup.get(), field);
-            } else if (Block.class.isAssignableFrom(field.getType())) {
-                blockSupplier = () -> {
-                    try {
-                        Object v = field.get(null);
-                        if (v == null) {
-                            Block instance = new Block(BlockBehaviour.Properties.of());
-                            field.set(null, instance);
-                            return instance;
-                        }
-                        return (Block) v;
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+            } else if (Block.class.isAssignableFrom(field.getType())) {blockSupplier = () -> {
+                try {
+                    Object v = field.get(null);
+                    if (v == null) {
+                        Block instance = createInstance(field);
+                        field.set(null, instance);
+                        return instance;
                     }
-                };
+                    return (Block) v;
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Failed to auto-instantiate block field: " + field.getName(), e);
+                }
+            };
             } else {
                 throw new SkeletonReflectionException(
                         "@SkeletonBlock field must be Block or Supplier<Block>: "
@@ -100,5 +99,12 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
             );
         }
         return block;
+    }
+
+    private Block createInstance(Field field) {
+        // TODO: Check if annotated with @WithBlockProps
+        // if (field.isAnnotationPresent(WithBlockProps.class)) { ... }
+
+        return new Block(BlockBehaviour.Properties.of());
     }
 }

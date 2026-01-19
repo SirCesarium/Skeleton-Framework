@@ -35,21 +35,19 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
 
             if (value instanceof Supplier<?> sup) {
                 supplier = () -> (Item) sup.get();
-            } else if (Item.class.isAssignableFrom(field.getType())) {
-                supplier = () -> {
-                    try {
-                        Object v = field.get(null);
-                        if (v == null) {
-                            Item instance = new Item(new Item.Properties());
-                            field.set(null, instance);
-                            return instance;
-                        } else {
-                            return (Item) v;
-                        }
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+            } else if (Item.class.isAssignableFrom(field.getType())) {supplier = () -> {
+                try {
+                    Object v = field.get(null);
+                    if (v == null) {
+                        Item instance = createInstance(field);
+                        field.set(null, instance);
+                        return instance;
                     }
-                };
+                    return (Item) v;
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Failed to auto-instantiate field: " + field.getName(), e);
+                }
+            };
             } else {
                 throw new SkeletonReflectionException(
                         "@SkeletonItem field must be Item or Supplier<Item>: "
@@ -79,5 +77,12 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
 
     private void register(SkeletonItem annotation, Supplier<Item> supplier) {
         itemRegister.register(annotation.value(), supplier);
+    }
+
+    private Item createInstance(Field field) {
+        // TODO: Check if annotated with @WithItemProps
+        // if (field.isAnnotationPresent(WithItemProps.class)) { ... }
+
+        return new Item(new Item.Properties());
     }
 }
