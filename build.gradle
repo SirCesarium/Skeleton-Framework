@@ -28,6 +28,25 @@ base {
 // Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+sourceSets {
+    devmod {
+        java {
+            srcDir 'src/devmod/java'
+        }
+        resources {
+            srcDir 'src/devmod/resources'
+        }
+
+        compileClasspath += sourceSets.main.output + configurations.runtimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+configurations {
+    devmodImplementation.extendsFrom implementation
+    devmodRuntimeOnly.extendsFrom runtimeOnly
+}
+
 neoForge {
     // Specify the version of NeoForge to use.
     version = project.neo_version
@@ -61,7 +80,8 @@ neoForge {
         // The gametest system is also enabled by default for other run configs under the /test command.
         gameTestServer {
             type = "gameTestServer"
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'devmod'
         }
 
         data {
@@ -91,11 +111,12 @@ neoForge {
     }
 
     mods {
-        // define mod <-> source bindings
-        // these are used to tell the game which sources are for which mod
-        // multi mod projects should define one per mod
         "${mod_id}" {
             sourceSet(sourceSets.main)
+        }
+
+        devmod {
+            sourceSet(sourceSets.devmod)
         }
     }
 }
@@ -183,4 +204,8 @@ idea {
         downloadSources = true
         downloadJavadoc = true
     }
+}
+
+tasks.withType(ProcessResources).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

@@ -1,0 +1,26 @@
+modLoader="javafml"
+
+loaderVersion="${loader_version_range}"
+
+license="${mod_license}"
+
+[[mods]]
+modId="devmod"
+version="1.0.0"
+displayName="Skeleton Dev Mod"
+authors="Skeleton Framework"
+description="Internal dev mod for Skeleton Framework"
+
+[[dependencies.devmod]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.devmod]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
