@@ -1,10 +1,17 @@
-name: Build
+name: Build and Release
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,10 +28,59 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # This is needed to be able to run ./gradlew below
-      # You can run `git update-index --chmod +x gradlew` then remove this step.
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
+      - name: Get Project Version
+        id: get_version
+        run: |
+          VERSION=$(grep "mod_version" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Prepare Release Notes
+        id: release_notes
+        run: |
+          USE_DEFAULT=true
+          
+          if [ -s "CHANGELOG.md" ]; then
+            PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          
+            if [ -n "$PREVIOUS_TAG" ]; then
+              git show "$PREVIOUS_TAG:CHANGELOG.md" > .prev_changelog 2>/dev/null || touch .prev_changelog
+              if ! cmp -s "CHANGELOG.md" ".prev_changelog"; then
+                USE_DEFAULT=false
+              fi
+            else
+              USE_DEFAULT=false
+            fi
+          fi
+
+          if [ "$USE_DEFAULT" = false ]; then
+            echo "body<<EOF" >> $GITHUB_OUTPUT
+            cat CHANGELOG.md >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "body<<EOF" >> $GITHUB_OUTPUT
+            echo "## 🚀 Skeleton Framework Release" >> $GITHUB_OUTPUT
+            echo "Automated build for version **${{ env.VERSION }}**." >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            echo "Check the commit history for a detailed list of changes." >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build with Gradle
         run: ./gradlew build
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          body: ${{ steps.release_notes.outputs.body }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
