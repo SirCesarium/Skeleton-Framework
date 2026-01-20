@@ -7,12 +7,17 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 
 import java.util.function.Supplier;
 
 @SkeletonBootstrap
 @Mod("devmod")
+@EventBusSubscriber(Dist.DEDICATED_SERVER)
 public class DevMod {
     public DevMod() {}
 
@@ -30,4 +35,13 @@ public class DevMod {
 
     @SkeletonBlock(value = "test_block_without_item", withItem = false)
     public static Block TEST_BLOCK_WITHOUT_ITEM;
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        String haltOnStart = System.getenv("HALT_ON_START");
+
+        if ("true".equalsIgnoreCase(haltOnStart)) {
+            event.getServer().halt(false);
+        }
+    }
 }

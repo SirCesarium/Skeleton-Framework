@@ -71,6 +71,17 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
+      - name: Accept Minecraft EULA
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+
+      - name: Run Smoke Test (Validation)
+        env:
+          HALT_ON_START: "true"
+        timeout-minutes: 5
+        run: ./gradlew :runServer --no-daemon
+
       - name: Create GitHub Release
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: softprops/action-gh-release@v2
