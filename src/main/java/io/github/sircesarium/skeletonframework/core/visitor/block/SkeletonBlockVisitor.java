@@ -1,4 +1,4 @@
-package io.github.sircesarium.skeletonframework.core.visitor;
+package io.github.sircesarium.skeletonframework.core.visitor.block;
 
 import io.github.sircesarium.skeletonframework.core.error.SkeletonReflectionException;
 import io.github.sircesarium.skeletonframework.core.reflection.base.ReflectionVisitor;

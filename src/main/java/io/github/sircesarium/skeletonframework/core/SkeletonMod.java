@@ -6,8 +6,8 @@ import io.github.sircesarium.skeletonframework.core.annotation.generic.SkeletonB
 import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
 import io.github.sircesarium.skeletonframework.core.reflection.ReflectionProcessor;
 import io.github.sircesarium.skeletonframework.core.reflection.resolver.FieldResolver;
-import io.github.sircesarium.skeletonframework.core.visitor.SkeletonBlockVisitor;
-import io.github.sircesarium.skeletonframework.core.visitor.SkeletonItemVisitor;
+import io.github.sircesarium.skeletonframework.core.visitor.block.SkeletonBlockVisitor;
+import io.github.sircesarium.skeletonframework.core.visitor.item.SkeletonItemVisitor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
