@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface WithItemProperties {
-    String value() default ""; // TODO: replace with %item_field_name%_PROPS
+public @interface WithItemProps {
+    String value() default "";
 }
 

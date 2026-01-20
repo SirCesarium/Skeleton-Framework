@@ -1,13 +1,16 @@
 package io.github.sircesarium.skeletonframework.core.visitor.item;
 
+import io.github.sircesarium.skeletonframework.core.annotation.item.WithItemProps;
 import io.github.sircesarium.skeletonframework.core.error.SkeletonReflectionException;
 import io.github.sircesarium.skeletonframework.core.reflection.base.ReflectionVisitor;
+import io.github.sircesarium.skeletonframework.core.registry.PropertyRegistry;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import net.neoforged.neoforgespi.language.ModFileScanData;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.lang.reflect.Constructor;
@@ -52,37 +55,42 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
         validateField(field);
 
         try {
-            Object value = field.get(null);
-            Supplier<Item> supplier;
-
-            if (value instanceof Supplier<?> sup) {
-                supplier = () -> (Item) sup.get();
-            } else if (Item.class.isAssignableFrom(field.getType())) {
-                supplier = () -> {
-                    try {
-                        Object v = field.get(null);
-                        if (v == null) {
-                            Item instance = createInstance(field, itemTypeForLambda);
-                            field.set(null, instance);
-                            return instance;
-                        }
-                        return (Item) v;
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Failed to auto-instantiate field: " + field.getName(), e);
-                    }
-                };
-            } else {
-                throw new SkeletonReflectionException(
-                        "@SkeletonItem field must be Item or Supplier<Item>: "
-                                + field.getDeclaringClass().getName() + "#" + field.getName()
-                );
-            }
+            Supplier<Item> supplier = getItemSupplier(field, itemTypeForLambda);
 
             register(itemName, supplier);
 
         } catch (IllegalAccessException e) {
             throw new SkeletonReflectionException("Cannot access @SkeletonItem field: " + field.getName(), e);
         }
+    }
+
+    private @NotNull Supplier<Item> getItemSupplier(Field field, Class<? extends Item> itemTypeForLambda) throws IllegalAccessException {
+        Object value = field.get(null);
+        Supplier<Item> supplier;
+
+        if (value instanceof Supplier<?> sup) {
+            supplier = () -> (Item) sup.get();
+        } else if (Item.class.isAssignableFrom(field.getType())) {
+            supplier = () -> {
+                try {
+                    Object v = field.get(null);
+                    if (v == null) {
+                        Item instance = createInstance(field, itemTypeForLambda);
+                        field.set(null, instance);
+                        return instance;
+                    }
+                    return (Item) v;
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Failed to auto-instantiate field: " + field.getName(), e);
+                }
+            };
+        } else {
+            throw new SkeletonReflectionException(
+                    "@SkeletonItem field must be Item or Supplier<Item>: "
+                            + field.getDeclaringClass().getName() + "#" + field.getName()
+            );
+        }
+        return supplier;
     }
 
     private void validateField(Field field) {
@@ -100,19 +108,31 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
     }
 
     private Item createInstance(Field field, Class<? extends Item> itemType) {
-        // TODO: Check if annotated with @WithItemProps
-        // if (field.isAnnotationPresent(WithItemProps.class)) { ... }
         try {
+            Item.Properties props;
+
+            if (field.isAnnotationPresent(WithItemProps.class)) {
+                String propsId = field.getAnnotation(WithItemProps.class).value();
+
+                if (propsId.isEmpty()) {
+                    propsId = field.getName() + "_PROPS";
+                }
+
+                props = PropertyRegistry.getItemProps(propsId);
+            } else {
+                props = new Item.Properties();
+            }
+
             Constructor<? extends Item> constructor = itemType.getConstructor(Item.Properties.class);
-            return constructor.newInstance(new Item.Properties());
+            return constructor.newInstance(props);
+
         } catch (NoSuchMethodException e) {
             throw new SkeletonReflectionException(
                     "Item class " + itemType.getName() +
                             " must have a constructor that accepts Item.Properties: " +
                             field.getDeclaringClass().getName() + "#" + field.getName(), e);
         } catch (Exception e) {
-            throw new SkeletonReflectionException(
-                    "Failed to create instance of " + itemType.getName(), e);
+            throw e instanceof RuntimeException re ? re : new SkeletonReflectionException("Failed to create instance", e);
         }
     }
 }

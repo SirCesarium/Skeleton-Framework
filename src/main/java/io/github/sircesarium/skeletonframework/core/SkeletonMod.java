@@ -4,9 +4,11 @@ import io.github.sircesarium.skeletonframework.SkeletonFramework;
 import io.github.sircesarium.skeletonframework.core.annotation.block.SkeletonBlock;
 import io.github.sircesarium.skeletonframework.core.annotation.generic.SkeletonBootstrap;
 import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
+import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItemProps;
 import io.github.sircesarium.skeletonframework.core.reflection.ReflectionProcessor;
 import io.github.sircesarium.skeletonframework.core.reflection.resolver.FieldResolver;
 import io.github.sircesarium.skeletonframework.core.visitor.block.SkeletonBlockVisitor;
+import io.github.sircesarium.skeletonframework.core.visitor.item.SkeletonItemPropsVisitor;
 import io.github.sircesarium.skeletonframework.core.visitor.item.SkeletonItemVisitor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -26,6 +28,11 @@ public class SkeletonMod {
         FieldResolver fieldResolver = new FieldResolver();
 
         ReflectionProcessor<Field> processor = new ReflectionProcessor<>(fieldResolver);
+
+        processor.process(
+                index.find(SkeletonItemProps.class, ElementType.FIELD),
+                new SkeletonItemPropsVisitor()
+        );
 
         processor.process(
                 index.find(SkeletonItem.class, ElementType.FIELD),
