@@ -1,6 +1,5 @@
 package io.github.sircesarium.skeletonframework.core.visitor;
 
-import io.github.sircesarium.skeletonframework.core.annotation.block.SkeletonBlock;
 import io.github.sircesarium.skeletonframework.core.error.SkeletonReflectionException;
 import io.github.sircesarium.skeletonframework.core.reflection.base.ReflectionVisitor;
 import net.minecraft.world.level.block.Block;
@@ -29,7 +28,9 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
 
     @Override
     public void visit(Field field, ModFileScanData.AnnotationData data) {
-        SkeletonBlock annotation = field.getAnnotation(SkeletonBlock.class);
+        String blockName = (String) data.annotationData().get("value");
+        boolean withItem = (boolean) data.annotationData().getOrDefault("withItem", true);
+
         validateField(field);
 
         try {
@@ -38,19 +39,20 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
 
             if (value instanceof Supplier<?> sup) {
                 blockSupplier = () -> castBlock(sup.get(), field);
-            } else if (Block.class.isAssignableFrom(field.getType())) {blockSupplier = () -> {
-                try {
-                    Object v = field.get(null);
-                    if (v == null) {
-                        Block instance = createInstance(field);
-                        field.set(null, instance);
-                        return instance;
+            } else if (Block.class.isAssignableFrom(field.getType())) {
+                blockSupplier = () -> {
+                    try {
+                        Object v = field.get(null);
+                        if (v == null) {
+                            Block instance = createInstance(field);
+                            field.set(null, instance);
+                            return instance;
+                        }
+                        return (Block) v;
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Failed to auto-instantiate block field: " + field.getName(), e);
                     }
-                    return (Block) v;
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Failed to auto-instantiate block field: " + field.getName(), e);
-                }
-            };
+                };
             } else {
                 throw new SkeletonReflectionException(
                         "@SkeletonBlock field must be Block or Supplier<Block>: "
@@ -59,7 +61,7 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
                 );
             }
 
-            register(annotation, blockSupplier);
+            register(blockName, withItem, blockSupplier);
 
         } catch (IllegalAccessException e) {
             throw new SkeletonReflectionException(
@@ -78,13 +80,13 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
         }
     }
 
-    private void register(SkeletonBlock annotation, Supplier<Block> blockSupplier) {
+    private void register(String name, boolean withItem, Supplier<Block> blockSupplier) {
         var blockRegistryObject =
-                blockRegister.register(annotation.value(), blockSupplier);
+                blockRegister.register(name, blockSupplier);
 
-        if (annotation.withItem()) {
+        if (withItem) {
             itemRegister.registerSimpleBlockItem(
-                    annotation.value(),
+                    name,
                     blockRegistryObject
             );
         }
@@ -101,6 +103,7 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
         return block;
     }
 
+    @SuppressWarnings("unused")
     private Block createInstance(Field field) {
         // TODO: Check if annotated with @WithBlockProps
         // if (field.isAnnotationPresent(WithBlockProps.class)) { ... }
