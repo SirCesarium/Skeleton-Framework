@@ -1,5 +1,6 @@
 package com.example.devmod;
 
+import com.example.devmod.item.CustomItem;
 import io.github.sircesarium.skeletonframework.core.annotation.generic.SkeletonBootstrap;
 import io.github.sircesarium.skeletonframework.core.annotation.block.SkeletonBlock;
 import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
@@ -35,6 +36,9 @@ public class DevMod {
 
     @SkeletonBlock(value = "test_block_without_item", withItem = false)
     public static Block TEST_BLOCK_WITHOUT_ITEM;
+
+    @SkeletonItem(value = "my_custom_item", type = CustomItem.class)
+    public static Item MY_CUSTOM_ITEM;
 
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent event) {

@@ -10,7 +10,9 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import net.neoforged.neoforgespi.language.ModFileScanData;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.function.Supplier;
 
@@ -35,19 +37,20 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
 
             if (value instanceof Supplier<?> sup) {
                 supplier = () -> (Item) sup.get();
-            } else if (Item.class.isAssignableFrom(field.getType())) {supplier = () -> {
-                try {
-                    Object v = field.get(null);
-                    if (v == null) {
-                        Item instance = createInstance(field);
-                        field.set(null, instance);
-                        return instance;
+            } else if (Item.class.isAssignableFrom(field.getType())) {
+                supplier = () -> {
+                    try {
+                        Object v = field.get(null);
+                        if (v == null) {
+                            Item instance = createInstance(field, annotation);
+                            field.set(null, instance);
+                            return instance;
+                        }
+                        return (Item) v;
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException("Failed to auto-instantiate field: " + field.getName(), e);
                     }
-                    return (Item) v;
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Failed to auto-instantiate field: " + field.getName(), e);
-                }
-            };
+                };
             } else {
                 throw new SkeletonReflectionException(
                         "@SkeletonItem field must be Item or Supplier<Item>: "
@@ -56,7 +59,7 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
                 );
             }
 
-            register(annotation, supplier, annotation.type());
+            register(annotation, supplier);
 
         } catch (IllegalAccessException e) {
             throw new SkeletonReflectionException(
@@ -75,14 +78,28 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
         }
     }
 
-    private void register(SkeletonItem annotation, Supplier<Item> supplier, Class<? extends Item> itemClass) {
+    private void register(SkeletonItem annotation, Supplier<Item> supplier) {
         itemRegister.register(annotation.value(), supplier);
     }
 
-    private Item createInstance(Field field) {
+    private Item createInstance(Field field, SkeletonItem annotation) {
         // TODO: Check if annotated with @WithItemProps
         // if (field.isAnnotationPresent(WithItemProps.class)) { ... }
+        try {
+            Class<? extends Item> itemType = annotation.type();
 
-        return new Item(new Item.Properties());
+            Constructor<? extends Item> constructor = itemType.getConstructor(Item.Properties.class);
+            return constructor.newInstance(new Item.Properties());
+
+        } catch (NoSuchMethodException e) {
+            throw new SkeletonReflectionException(
+                    "Item class " + annotation.type().getName() +
+                            " must have a constructor that accepts Item.Properties: " +
+                            field.getDeclaringClass().getName() + "#" + field.getName(), e);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new SkeletonReflectionException(
+                    "Failed to create instance of " + annotation.type().getName() + ": " +
+                            field.getDeclaringClass().getName() + "#" + field.getName(), e);
+        }
     }
 }
