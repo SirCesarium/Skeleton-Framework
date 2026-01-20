@@ -56,7 +56,7 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
                 );
             }
 
-            register(annotation, supplier);
+            register(annotation, supplier, annotation.type());
 
         } catch (IllegalAccessException e) {
             throw new SkeletonReflectionException(
@@ -75,7 +75,7 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
         }
     }
 
-    private void register(SkeletonItem annotation, Supplier<Item> supplier) {
+    private void register(SkeletonItem annotation, Supplier<Item> supplier, Class<? extends Item> itemClass) {
         itemRegister.register(annotation.value(), supplier);
     }
 
