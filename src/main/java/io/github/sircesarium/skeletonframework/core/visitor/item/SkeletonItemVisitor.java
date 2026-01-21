@@ -65,12 +65,9 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
     }
 
     private @NotNull Supplier<Item> getItemSupplier(Field field, Class<? extends Item> itemTypeForLambda) throws IllegalAccessException {
-        Object value = field.get(null);
         Supplier<Item> supplier;
 
-        if (value instanceof Supplier<?> sup) {
-            supplier = () -> (Item) sup.get();
-        } else if (Item.class.isAssignableFrom(field.getType())) {
+        if (Item.class.isAssignableFrom(field.getType())) {
             supplier = () -> {
                 try {
                     Object v = field.get(null);
@@ -86,7 +83,7 @@ public final class SkeletonItemVisitor implements ReflectionVisitor<Field> {
             };
         } else {
             throw new SkeletonReflectionException(
-                    "@SkeletonItem field must be Item or Supplier<Item>: "
+                    "@SkeletonItem field must be Item: "
                             + field.getDeclaringClass().getName() + "#" + field.getName()
             );
         }

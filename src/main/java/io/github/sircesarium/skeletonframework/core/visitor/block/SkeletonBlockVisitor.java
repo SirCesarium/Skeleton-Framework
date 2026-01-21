@@ -33,41 +33,31 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
 
         validateField(field);
 
-        try {
-            Object value = field.get(null);
-            Supplier<Block> blockSupplier;
+        Supplier<Block> blockSupplier;
 
-            if (value instanceof Supplier<?> sup) {
-                blockSupplier = () -> castBlock(sup.get(), field);
-            } else if (Block.class.isAssignableFrom(field.getType())) {
-                blockSupplier = () -> {
-                    try {
-                        Object v = field.get(null);
-                        if (v == null) {
-                            Block instance = createInstance(field);
-                            field.set(null, instance);
-                            return instance;
-                        }
-                        return (Block) v;
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException("Failed to auto-instantiate block field: " + field.getName(), e);
+        if (Block.class.isAssignableFrom(field.getType())) {
+            blockSupplier = () -> {
+                try {
+                    Object v = field.get(null);
+                    if (v == null) {
+                        Block instance = createInstance(field);
+                        field.set(null, instance);
+                        return instance;
                     }
-                };
-            } else {
-                throw new SkeletonReflectionException(
-                        "@SkeletonBlock field must be Block or Supplier<Block>: "
-                                + field.getDeclaringClass().getName()
-                                + "#" + field.getName()
-                );
-            }
-
-            register(blockName, withItem, blockSupplier);
-
-        } catch (IllegalAccessException e) {
+                    return (Block) v;
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Failed to auto-instantiate block field: " + field.getName(), e);
+                }
+            };
+        } else {
             throw new SkeletonReflectionException(
-                    "Cannot access @SkeletonBlock field: " + field.getName(), e
+                    "@SkeletonBlock field must be Block: "
+                            + field.getDeclaringClass().getName()
+                            + "#" + field.getName()
             );
         }
+
+        register(blockName, withItem, blockSupplier);
     }
 
     private void validateField(Field field) {
@@ -90,17 +80,6 @@ public final class SkeletonBlockVisitor implements ReflectionVisitor<Field> {
                     blockRegistryObject
             );
         }
-    }
-
-    private Block castBlock(Object value, Field field) {
-        if (!(value instanceof Block block)) {
-            throw new SkeletonReflectionException(
-                    "Supplier for @SkeletonBlock must supply Block: "
-                            + field.getDeclaringClass().getName()
-                            + "#" + field.getName()
-            );
-        }
-        return block;
     }
 
     @SuppressWarnings("unused")

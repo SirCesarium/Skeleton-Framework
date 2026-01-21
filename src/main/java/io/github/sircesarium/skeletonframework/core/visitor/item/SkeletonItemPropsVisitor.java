@@ -16,22 +16,23 @@ public final class SkeletonItemPropsVisitor implements ReflectionVisitor<Field> 
     public void visit(Field field, ModFileScanData.AnnotationData data) {
         String propsId = (String) data.annotationData().get("value");
 
+        if (propsId == null || propsId.isEmpty()) {
+            propsId = field.getName();
+        }
+
         validateField(field);
 
         try {
             Object value = field.get(null);
-
             if (value instanceof Item.Properties props) {
                 PropertyRegistry.saveItemProps(propsId, props);
             } else {
                 throw new SkeletonRegistryException(
-                        "Field '" + field.getName() + "' in " + field.getDeclaringClass().getName() +
-                                " is annotated with @SkeletonItemProps but is not of type Item.Properties."
+                        "Field '" + field.getName() + "' is not Item.Properties"
                 );
             }
-
         } catch (IllegalAccessException e) {
-            throw new SkeletonReflectionException("Could not access @SkeletonItemProps field: " + field.getName(), e);
+            throw new SkeletonReflectionException("Error accessing field", e);
         }
     }
 
