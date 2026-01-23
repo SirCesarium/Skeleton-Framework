@@ -1,0 +1,19 @@
+name: "📖 Documentation Issue"
+description: "Report an error or suggest an improvement for the docs"
+title: "[DOCS]: "
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: "What is wrong with the documentation?"
+      description: "Point out the specific section or page that needs improvement."
+      placeholder: "The example in the README for @RegisterItem is outdated..."
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: "Suggested Improvement"
+      description: "How can we make it clearer?"
+      placeholder: "I suggest adding a table explaining the parameters..."
