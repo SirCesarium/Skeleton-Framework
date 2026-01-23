@@ -31,7 +31,7 @@
 ```java
 public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
 public static final DeferredItem<Item> MY_ITEM = ITEMS.register("my_item", () -> new Item(new Item.Properties()));
-// ... and don't forget to register the BUS in the constructor and the item in the creative tab 🪦🥀🥀🥀
+// ... and don't forget to register the BUS in the constructor and the item in the creative tab 🪦🥀🥀
 ```
 
 ### Beacon
@@ -100,7 +100,7 @@ repositories {
 
 dependencies {
     // implementation 'com.github.SirCesarium:Beacon-Core:%version%'
-    implementation 'com.github.SirCesarium:Beacon-Core:v2.1.0-alpha'
+    implementation 'com.github.SirCesarium:Beacon-Core:v3.0.0-alpha'
 }
 ```
 
