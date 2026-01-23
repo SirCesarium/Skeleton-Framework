@@ -1,11 +1,11 @@
 package com.example.devmod;
 
 import com.example.devmod.item.CustomItem;
-import io.github.sircesarium.skeletonframework.core.annotation.generic.SkeletonBootstrap;
-import io.github.sircesarium.skeletonframework.core.annotation.block.SkeletonBlock;
-import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItem;
-import io.github.sircesarium.skeletonframework.core.annotation.item.SkeletonItemProps;
-import io.github.sircesarium.skeletonframework.core.annotation.item.WithItemProps;
+import io.github.sircesarium.beaconcore.core.annotation.generic.BeaconMod;
+import io.github.sircesarium.beaconcore.core.annotation.block.RegisterBlock;
+import io.github.sircesarium.beaconcore.core.annotation.item.RegisterItem;
+import io.github.sircesarium.beaconcore.core.annotation.item.RegisterItemProps;
+import io.github.sircesarium.beaconcore.core.annotation.item.WithItemProps;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -21,36 +21,36 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-@SkeletonBootstrap
+@BeaconMod
 @Mod(DevMod.MODID)
 @EventBusSubscriber(Dist.DEDICATED_SERVER)
 public class DevMod {
 
     public static final String MODID = "devmod";
 
-    @SkeletonItemProps
+    @RegisterItemProps
     public static Item.Properties MY_PROPERTIES = new Item.Properties().rarity(Rarity.EPIC);
 
-    @SkeletonItemProps
+    @RegisterItemProps
     public static Item.Properties TEST_PROPS = new Item.Properties().fireResistant();
 
-    @SkeletonBlock("test_block")
+    @RegisterBlock("test_block")
     public static Block TEST_BLOCK;
 
-    @SkeletonItem("test_item")
+    @RegisterItem("test_item")
     public static Item TEST_ITEM;
 
-    @SkeletonBlock(value = "test_block_without_item", withItem = false)
+    @RegisterBlock(value = "test_block_without_item", withItem = false)
     public static Block TEST_BLOCK_WITHOUT_ITEM;
 
-    @SkeletonItem(value = "my_custom_item", type = CustomItem.class)
+    @RegisterItem(value = "my_custom_item", type = CustomItem.class)
     public static Item MY_CUSTOM_ITEM;
 
-    @SkeletonItem("test")
+    @RegisterItem("test")
     @WithItemProps
     public static Item TEST;
 
-    @SkeletonItem("item_with_props")
+    @RegisterItem("item_with_props")
     @WithItemProps("MY_PROPERTIES")
     public static Item ITEM_WITH_PROPS;
 
