@@ -1,0 +1,49 @@
+name: "Bug Report"
+description: "Report a technical issue or unexpected behavior"
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a clear and concise report to help us improve Beacon Core. 
+        Incomplete reports may be closed if there is not enough information to reproduce the issue.
+  - type: input
+    id: version
+    attributes:
+      label: "Beacon Core Version"
+      placeholder: "e.g., v2.1.0-alpha"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: "Environment"
+      description: "Minecraft version, NeoForge version, and Java version."
+      placeholder: "MC 1.21.1 - NeoForge 21.1.1 - Java 21"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to Reproduce"
+      description: "Explain how the bug can be triggered."
+      placeholder: "1. Annotate a field with @RegisterItem... 2. Launch the game..."
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: "Actual Behavior"
+      description: "What is currently happening?"
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: "Expected Behavior"
+      description: "What should happen instead?"
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs and Stacktraces"
+      description: "Please provide relevant log output or crash reports."
+      render: java

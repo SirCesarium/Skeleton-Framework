@@ -1,0 +1,31 @@
+name: "Feature Request"
+description: "Request a new idea for Beacon Core"
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a detailed description of the feature you would like to see implemented. 
+        High-quality proposals are more likely to be prioritized for the roadmap.
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: "Feature Description"
+      description: "A clear and concise description of what the feature should do."
+      placeholder: "I would like Beacon to support..."
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: "Technical Justification"
+      description: "Explain why this feature is necessary. How does it improve Developer Experience (DX) or reduce boilerplate?"
+      placeholder: "This feature would eliminate the need for..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives Considered"
+      description: "Describe any alternative solutions or workarounds you've considered."
