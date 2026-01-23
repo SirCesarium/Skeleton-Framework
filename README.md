@@ -11,8 +11,9 @@
 
 ---
 
-> [!TIP]
-> ¿Hablas español? [Haz click aquí para ver este archivo en español.](./README_ES.md)
+[//]: # (> [!TIP])
+
+[//]: # (> ¿Hablas español? [Haz click aquí para ver este archivo en español.]&#40;./README_ES.md&#41;)
 
 ## What is Beacon?
 
