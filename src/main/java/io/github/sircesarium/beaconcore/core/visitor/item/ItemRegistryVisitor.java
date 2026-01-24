@@ -5,6 +5,8 @@ import io.github.sircesarium.beaconcore.core.annotation.item.WithItemProps;
 import io.github.sircesarium.beaconcore.core.error.BeaconReflectionException;
 import io.github.sircesarium.beaconcore.core.reflection.base.ReflectionVisitor;
 import io.github.sircesarium.beaconcore.core.registry.PropertyRegistry;
+import io.github.sircesarium.beaconcore.core.registry.RegistryManager;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -21,12 +23,11 @@ import java.util.function.Supplier;
 
 public final class ItemRegistryVisitor implements ReflectionVisitor<Field> {
 
-    private final DeferredRegister.Items itemRegister;
+    private final DeferredRegister<Item> itemRegister;
     private final String modNamespace;
 
     public ItemRegistryVisitor(IEventBus eventBus, ModContainer container) {
-        this.itemRegister = DeferredRegister.createItems(container.getModId());
-        this.itemRegister.register(eventBus);
+        this.itemRegister = RegistryManager.getOrCreate(eventBus, container.getModId(), Registries.ITEM);
         this.modNamespace = container.getModId();
     }
 

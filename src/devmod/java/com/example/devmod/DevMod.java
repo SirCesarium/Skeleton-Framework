@@ -51,7 +51,7 @@ public class DevMod {
     public static Item TEST;
 
     @RegisterItem("item_with_props")
-    @WithItemProps(value = "another_mod:WITH_NON_EXISTING_PROPS", fallback = "MY_PROPERTIES")
+    @WithItemProps(value = "TEST_PROPS", fallback = "MY_PROPERTIES")
     public static Item ITEM_WITH_PROPS;
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);

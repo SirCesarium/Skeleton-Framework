@@ -2,6 +2,8 @@ package io.github.sircesarium.beaconcore.core.visitor.block;
 
 import io.github.sircesarium.beaconcore.core.error.BeaconReflectionException;
 import io.github.sircesarium.beaconcore.core.reflection.base.ReflectionVisitor;
+import io.github.sircesarium.beaconcore.core.registry.RegistryManager;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
@@ -15,15 +17,12 @@ import java.util.function.Supplier;
 
 public final class BlockRegistryVisitor implements ReflectionVisitor<Field> {
 
-    private final DeferredRegister.Blocks blockRegister;
+    private final DeferredRegister<Block> blockRegister;
     private final DeferredRegister.Items itemRegister;
 
     public BlockRegistryVisitor(IEventBus eventBus, ModContainer container) {
-        this.blockRegister = DeferredRegister.createBlocks(container.getModId());
-        this.itemRegister = DeferredRegister.createItems(container.getModId());
-
-        this.blockRegister.register(eventBus);
-        this.itemRegister.register(eventBus);
+        this.blockRegister = RegistryManager.getOrCreate(eventBus, container.getModId(), Registries.BLOCK);
+        this.itemRegister = (DeferredRegister.Items) RegistryManager.getOrCreate(eventBus, container.getModId(), Registries.ITEM);
     }
 
     @Override
