@@ -7,11 +7,15 @@ import net.minecraft.world.item.Item;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class PropertyRegistry {
-    public static final Map<String, Item.Properties> ITEM_PROPS = new HashMap<>();
+    private static final Map<String, Item.Properties> ITEM_PROPS = new HashMap<>();
 
     public static void saveItemProps(String name, Item.Properties props) {
+        if (ITEM_PROPS.containsKey(name)) {
+            throw new BeaconRegistryException(BeaconErrorFormatter.formatDuplicateProperty(name));
+        }
         ITEM_PROPS.put(name, props);
     }
 
@@ -25,5 +29,13 @@ public class PropertyRegistry {
         }
 
         return props;
+    }
+
+    public static boolean existsInItemProps(String id) {
+        return ITEM_PROPS.containsKey(id);
+    }
+
+    public static Set<String> getAllRegisteredItemIds() {
+        return ITEM_PROPS.keySet();
     }
 }
