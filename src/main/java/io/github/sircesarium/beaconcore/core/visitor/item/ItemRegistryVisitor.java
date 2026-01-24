@@ -1,5 +1,6 @@
 package io.github.sircesarium.beaconcore.core.visitor.item;
 
+import io.github.sircesarium.beaconcore.BeaconCore;
 import io.github.sircesarium.beaconcore.core.annotation.item.WithItemProps;
 import io.github.sircesarium.beaconcore.core.error.BeaconReflectionException;
 import io.github.sircesarium.beaconcore.core.reflection.base.ReflectionVisitor;
@@ -21,10 +22,12 @@ import java.util.function.Supplier;
 public final class ItemRegistryVisitor implements ReflectionVisitor<Field> {
 
     private final DeferredRegister.Items itemRegister;
+    private final String modNamespace;
 
     public ItemRegistryVisitor(IEventBus eventBus, ModContainer container) {
         this.itemRegister = DeferredRegister.createItems(container.getModId());
         this.itemRegister.register(eventBus);
+        this.modNamespace = container.getModId();
     }
 
     @Override
@@ -106,16 +109,54 @@ public final class ItemRegistryVisitor implements ReflectionVisitor<Field> {
 
     private Item createInstance(Field field, Class<? extends Item> itemType) {
         try {
-            Item.Properties props;
+            Item.Properties props = null;
+            WithItemProps annotation = field.getAnnotation(WithItemProps.class);
 
-            if (field.isAnnotationPresent(WithItemProps.class)) {
-                String propsId = field.getAnnotation(WithItemProps.class).value();
+            if (annotation != null) {
+                String propsId = annotation.value().isEmpty() ? field.getName() + "_PROPS" : annotation.value();
+                String fallbackId = annotation.fallback();
 
-                if (propsId.isEmpty()) {
-                    propsId = field.getName() + "_PROPS";
+                String fullPropsId = normalizeId(propsId, modNamespace);
+                boolean isValueExternal = propsId.contains(":");
+
+                if (!fallbackId.isEmpty()) {
+                    String fullFallbackId = normalizeId(fallbackId, modNamespace);
+                    boolean isFallbackExternal = fallbackId.contains(":");
+
+                    if (!PropertyRegistry.existsInItemProps(fullFallbackId)) {
+                        if (!isFallbackExternal) {
+                            throw new BeaconReflectionException(
+                                    "Local fallback property '" + fullFallbackId + "' not found for field: " + field.getName());
+                        } else {
+                            BeaconCore.LOGGER.warn(
+                                    "External fallback property '{}' not found for field: {}", fullFallbackId, field.getName());
+                        }
+                    }
                 }
 
-                props = PropertyRegistry.getItemProps(propsId);
+                if (PropertyRegistry.existsInItemProps(fullPropsId)) {
+                    props = PropertyRegistry.getItemProps(fullPropsId);
+                } else {
+                    if (!isValueExternal) {
+                        throw new BeaconReflectionException(
+                                "Local property '" + fullPropsId + "' not found for field: " + field.getName());
+                    } else {
+                        BeaconCore.LOGGER.warn(
+                                "External property '{}' not found for field: {}. Attempting fallback...", fullPropsId, field.getName());
+                    }
+
+                    if (!fallbackId.isEmpty()) {
+                        String fullFallbackId = normalizeId(fallbackId, modNamespace);
+                        if (PropertyRegistry.existsInItemProps(fullFallbackId)) {
+                            props = PropertyRegistry.getItemProps(fullFallbackId);
+                        }
+                    }
+                }
+
+                if (props == null) {
+                    props = PropertyRegistry.getItemProps(fullPropsId);
+                }
+
             } else {
                 props = new Item.Properties();
             }
@@ -123,13 +164,13 @@ public final class ItemRegistryVisitor implements ReflectionVisitor<Field> {
             Constructor<? extends Item> constructor = itemType.getConstructor(Item.Properties.class);
             return constructor.newInstance(props);
 
-        } catch (NoSuchMethodException e) {
-            throw new BeaconReflectionException(
-                    "Item class " + itemType.getName() +
-                            " must have a constructor that accepts Item.Properties: " +
-                            field.getDeclaringClass().getName() + "#" + field.getName(), e);
         } catch (Exception e) {
-            throw e instanceof RuntimeException re ? re : new BeaconReflectionException("Failed to create instance", e);
+            throw e instanceof RuntimeException re ? re : new BeaconReflectionException("Failed to create instance for " + field.getName(), e);
         }
+    }
+
+    private static String normalizeId(String id, String defaultNamespace) {
+        if (id == null || id.isEmpty()) return "";
+        return id.contains(":") ? id : defaultNamespace + ":" + id;
     }
 }
