@@ -31,7 +31,7 @@ public class BeaconBootstrapper {
 
         processor.process(
                 index.find(RegisterItemProps.class, ElementType.FIELD),
-                new ItemPropsRegistryVisitor()
+                new ItemPropsRegistryVisitor(container)
         );
 
         processor.process(
