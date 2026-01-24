@@ -31,7 +31,7 @@ public class DevMod {
     @RegisterItemProps
     public static Item.Properties MY_PROPERTIES = new Item.Properties().rarity(Rarity.EPIC);
 
-    @RegisterItemProps
+    @RegisterItemProps()
     public static Item.Properties TEST_PROPS = new Item.Properties().fireResistant();
 
     @RegisterBlock("test_block")
@@ -51,7 +51,7 @@ public class DevMod {
     public static Item TEST;
 
     @RegisterItem("item_with_props")
-    @WithItemProps("MY_PROPERTIES")
+    @WithItemProps(value = "another_mod:WITH_NON_EXISTING_PROPS", fallback = "MY_PROPERTIES")
     public static Item ITEM_WITH_PROPS;
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
