@@ -12,7 +12,6 @@
 ---
 
 > [!TIP]
-
 > ¿Hablas español? [Haz click aquí para ver este archivo en español.](./README_ES.md)
 
 ## What is Beacon?
