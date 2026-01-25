@@ -31,9 +31,9 @@ public final class BeaconErrorFormatter {
         return sb.toString();
     }
 
-    public static String formatDuplicateProperty(String id) {
+    public static String formatDuplicateProperty(String id, String propName) {
         return "\n\n§c§l[Beacon Core Error]§r\n" +
-                "§fDuplicate Property ID detected: '§e" + id + "§f'\n" +
+                "§fDuplicate " + propName + " Property ID detected: '§e" + id + "§f'\n" +
                 "§7Properties cannot be overwritten once registered. Please use a unique ID.§r\n";
     }
 }
