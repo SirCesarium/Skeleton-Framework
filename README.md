@@ -1,6 +1,6 @@
 <div align="center">
-    <img src="./beacon_core_scaled.png" alt="Beacon Core Logo" width="100">
-    <h1 style="margin: 0;">Beacon Core</h1>
+    <img src="./beacon_core_scaled.png" alt="Beacon Logo" width="100">
+    <h1 style="margin: 0;">Beacon</h1>
     <h3 style="margin: 0;">Progressive Minecraft modding framework focused on Developer Experience.</h3>
     <p>
         <img src="https://img.shields.io/badge/Minecraft-1.21.1-blue?style=for-the-badge" alt="Minecraft Version">
@@ -11,19 +11,19 @@
 
 ---
 
-[//]: # (> [!TIP])
+> [!TIP]
 
-[//]: # (> ¿Hablas español? [Haz click aquí para ver este archivo en español.]&#40;./README_ES.md&#41;)
+> ¿Hablas español? [Haz click aquí para ver este archivo en español.](./README_ES.md)
 
 ## What is Beacon?
 
-**Beacon Core** is a progressive framework for [NeoForge](https://github.com/neoforged/NeoForge) that makes modding more efficient by reducing NeoForge boilerplate considerably.
+**Beacon** is a progressive framework for [NeoForge](https://github.com/neoforged/NeoForge) that makes modding more efficient by reducing NeoForge boilerplate considerably.
 
 ## Why Beacon?
 
-**For newer developers:** Beacon Core aims to be extremely easy to learn. As a declarative framework, it allows you to add blocks and items in minutes simply by using `@annotations`.
+**For newer developers:** Beacon aims to be extremely easy to learn. As a declarative framework, it allows you to add blocks and items in minutes simply by using `@annotations`.
 
-**For experienced developers:** Beacon Core is built for flexibility and designed for seamless interoperability with native NeoForge code. You don't need to migrate your entire project to see the benefits; you can simply bootstrap your mod's entry point and start using it alongside your existing logic.
+**For experienced developers:** Beacon is built for flexibility and designed for seamless interoperability with native NeoForge code. You don't need to migrate your entire project to see the benefits; you can simply bootstrap your mod's entry point and start using it alongside your existing logic.
 
 ## The Beacon Way
 
@@ -53,7 +53,7 @@ public static Item.Properties MY_ITEM_PROPS = new Item.Properties();
 ```java
 @RegisterItem("my_item")
 @InTab("my_tab")
-@WithItemProps // Beacon Core automatically looks for MY_ITEM_PROPS
+@WithItemProps // Beacon automatically looks for MY_ITEM_PROPS
 public static Item MY_ITEM;
 ```
 
@@ -68,10 +68,10 @@ public static Item MY_ITEM;
 >
 > Don't worry! If you try to run your mod, you will see a very **helpful** error message instead of a cryptic crash.
 >
-> Beacon Core will tell you exactly what went wrong:
+> Beacon will tell you exactly what went wrong:
 >
 > ```yaml
-> [Beacon Core Error]
+> [Beacon Error]
 > Property with ID 'MY_ITEM_PROPS' was not found!
 > 
 > 💡 Did you mean MY_ITEN_PROPERTIES?
@@ -92,7 +92,7 @@ In the near future, we plan to release a system for "Bulk Registration". Imagine
 
 ## Installation
 
-Beacon Core is currently in **Alpha** and distributed via JitPack.
+Beacon is currently in **Alpha** and distributed via JitPack.
 
 ```gradle
 repositories {
