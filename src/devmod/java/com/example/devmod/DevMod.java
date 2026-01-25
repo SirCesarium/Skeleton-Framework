@@ -6,6 +6,7 @@ import io.github.sircesarium.beaconcore.core.annotation.block.RegisterBlock;
 import io.github.sircesarium.beaconcore.core.annotation.item.RegisterItem;
 import io.github.sircesarium.beaconcore.core.annotation.item.RegisterItemProps;
 import io.github.sircesarium.beaconcore.core.annotation.item.WithItemProps;
+import io.github.sircesarium.beaconcore.core.reflection.base.BlockWithItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -24,6 +25,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 @BeaconMod
 @Mod(DevMod.MODID)
 @EventBusSubscriber(Dist.DEDICATED_SERVER)
+@SuppressWarnings("unused")
 public class DevMod {
 
     public static final String MODID = "devmod";
@@ -35,12 +37,12 @@ public class DevMod {
     public static Item.Properties TEST_PROPS = new Item.Properties().fireResistant();
 
     @RegisterBlock("test_block")
-    public static Block TEST_BLOCK;
+    public static BlockWithItem TEST_BLOCK;
 
     @RegisterItem("test_item")
     public static Item TEST_ITEM;
 
-    @RegisterBlock(value = "test_block_without_item", withItem = false)
+    @RegisterBlock(value = "test_block_without_item")
     public static Block TEST_BLOCK_WITHOUT_ITEM;
 
     @RegisterItem(value = "my_custom_item", type = CustomItem.class)
