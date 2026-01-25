@@ -48,30 +48,44 @@ public final class ItemRegistryVisitor implements ReflectionVisitor<Field> {
         }
     }
 
-    private @NotNull Supplier<Item> getItemSupplier(Field field, Class<? extends Item> itemTypeForLambda) throws IllegalAccessException {
-        Supplier<Item> supplier;
+    @SuppressWarnings("unchecked")
+    private @NotNull Supplier<Item> getItemSupplier(Field field, Class<?> fieldType) throws IllegalAccessException {
+        return () -> {
+            try {
+                Object v = field.get(null);
 
-        if (Item.class.isAssignableFrom(field.getType())) {
-            supplier = () -> {
-                try {
-                    Object v = field.get(null);
-                    if (v == null) {
-                        Item instance = createInstance(field, itemTypeForLambda);
-                        field.set(null, instance);
-                        return instance;
+                if (v instanceof Supplier<?> supplier) {
+                    Object suppliedValue = supplier.get();
+                    if (suppliedValue instanceof Item item) {
+                        return item;
                     }
-                    return (Item) v;
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Failed to auto-instantiate field: " + field.getName(), e);
+                    throw new BeaconReflectionException("Supplier in field '" + field.getName() + "' did not return an Item");
                 }
-            };
-        } else {
-            throw new BeaconReflectionException(
-                    "@RegisterItem field must be Item: "
-                            + field.getDeclaringClass().getName() + "#" + field.getName()
-            );
-        }
-        return supplier;
+
+                if (v instanceof Item item) {
+                    return item;
+                }
+
+                if (v == null) {
+                    if (Modifier.isFinal(field.getModifiers())) {
+                        throw new BeaconReflectionException(
+                                "Field '" + field.getName() + "' is final and null. " +
+                                        "To use manual instantiation, use BeaconHolder<Item>. " +
+                                        "To use auto-injection, remove 'final'."
+                        );
+                    }
+
+                    Item instance = createInstance(field, (Class<? extends Item>) fieldType);
+                    field.set(null, instance);
+                    return instance;
+                }
+
+                throw new BeaconReflectionException("Unsupported field type for @RegisterItem: " + field.getName());
+
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to access field: " + field.getName(), e);
+            }
+        };
     }
 
     private void validateField(Field field) {
