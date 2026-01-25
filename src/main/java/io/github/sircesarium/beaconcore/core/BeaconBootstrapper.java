@@ -2,11 +2,13 @@ package io.github.sircesarium.beaconcore.core;
 
 import io.github.sircesarium.beaconcore.BeaconCore;
 import io.github.sircesarium.beaconcore.core.annotation.block.RegisterBlock;
+import io.github.sircesarium.beaconcore.core.annotation.block.RegisterBlockProps;
 import io.github.sircesarium.beaconcore.core.annotation.generic.BeaconMod;
 import io.github.sircesarium.beaconcore.core.annotation.item.RegisterItem;
 import io.github.sircesarium.beaconcore.core.annotation.item.RegisterItemProps;
 import io.github.sircesarium.beaconcore.core.reflection.ReflectionProcessor;
 import io.github.sircesarium.beaconcore.core.reflection.resolver.FieldResolver;
+import io.github.sircesarium.beaconcore.core.visitor.block.BlockPropsRegistryVisitor;
 import io.github.sircesarium.beaconcore.core.visitor.block.BlockRegistryVisitor;
 import io.github.sircesarium.beaconcore.core.visitor.item.ItemPropsRegistryVisitor;
 import io.github.sircesarium.beaconcore.core.visitor.item.ItemRegistryVisitor;
@@ -30,18 +32,23 @@ public class BeaconBootstrapper {
         ReflectionProcessor<Field> processor = new ReflectionProcessor<>(fieldResolver);
 
         processor.process(
+                index.find(RegisterBlockProps.class, ElementType.FIELD),
+                new BlockPropsRegistryVisitor(container)
+        );
+
+        processor.process(
                 index.find(RegisterItemProps.class, ElementType.FIELD),
                 new ItemPropsRegistryVisitor(container)
         );
 
         processor.process(
-                index.find(RegisterItem.class, ElementType.FIELD),
-                new ItemRegistryVisitor(eventBus, container)
+                index.find(RegisterBlock.class, ElementType.FIELD),
+                new BlockRegistryVisitor(eventBus, container)
         );
 
         processor.process(
-                index.find(RegisterBlock.class, ElementType.FIELD),
-                new BlockRegistryVisitor(eventBus, container)
+                index.find(RegisterItem.class, ElementType.FIELD),
+                new ItemRegistryVisitor(eventBus, container)
         );
     }
 

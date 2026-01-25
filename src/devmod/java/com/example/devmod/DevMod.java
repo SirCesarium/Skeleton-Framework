@@ -1,18 +1,23 @@
 package com.example.devmod;
 
 import com.example.devmod.item.CustomItem;
+import io.github.sircesarium.beaconcore.core.annotation.block.RegisterBlockProps;
+import io.github.sircesarium.beaconcore.core.annotation.block.WithBlockProps;
 import io.github.sircesarium.beaconcore.core.annotation.generic.BeaconMod;
 import io.github.sircesarium.beaconcore.core.annotation.block.RegisterBlock;
 import io.github.sircesarium.beaconcore.core.annotation.item.RegisterItem;
 import io.github.sircesarium.beaconcore.core.annotation.item.RegisterItemProps;
 import io.github.sircesarium.beaconcore.core.annotation.item.WithItemProps;
+import io.github.sircesarium.beaconcore.core.reflection.base.BeaconHolder;
 import io.github.sircesarium.beaconcore.core.reflection.base.BlockWithItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -56,6 +61,21 @@ public class DevMod {
     @WithItemProps(value = "TEST_PROPS", fallback = "MY_PROPERTIES")
     public static Item ITEM_WITH_PROPS;
 
+    @RegisterItem("food")
+    public static final BeaconHolder<Item> FOOD = new BeaconHolder<>(() -> new Item(new Item.Properties().food(new FoodProperties.Builder().alwaysEdible().build())));
+
+    @RegisterBlockProps("heavy_props")
+    public static BlockBehaviour.Properties HEAVY = BlockBehaviour.Properties.of().strength(5.0f);
+
+    @RegisterBlock("heavy_stone")
+    @WithBlockProps("heavy_props")
+    public static BlockWithItem HEAVY_STONE;
+
+    @RegisterBlock("manual_block")
+    public static final BeaconHolder<Block> MANUAL = new BeaconHolder<>(() ->
+            new Block(BlockBehaviour.Properties.of().noCollission())
+    );
+
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
     @SuppressWarnings("unused")
@@ -65,6 +85,8 @@ public class DevMod {
             .displayItems((parameters, output) -> {
                 output.accept(TEST.getDefaultInstance());
                 output.accept(ITEM_WITH_PROPS.getDefaultInstance());
+                output.accept(FOOD.get().getDefaultInstance());
+                output.accept(HEAVY_STONE.itemHolder().get().getDefaultInstance());
             }).build());
 
     public DevMod(IEventBus ev) {
