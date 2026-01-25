@@ -35,34 +35,14 @@ public final class ItemRegistryVisitor implements ReflectionVisitor<Field> {
     @SuppressWarnings("unchecked")
     public void visit(Field field, ModFileScanData.AnnotationData data) {
         String itemName = (String) data.annotationData().get("value");
-        Object typeRaw = data.annotationData().get("type");
-
-        Class<? extends Item> detectedType = Item.class;
-
-        if (typeRaw instanceof org.objectweb.asm.Type asmType) {
-            try {
-                detectedType = (Class<? extends Item>) Class.forName(
-                        asmType.getClassName(),
-                        false,
-                        Thread.currentThread().getContextClassLoader()
-                );
-            } catch (ClassNotFoundException e) {
-                throw new BeaconReflectionException(
-                        "The custom Item class defined in @RegisterItem was not found: " + asmType.getClassName() +
-                                " at field: " + field.getDeclaringClass().getName() + "#" + field.getName(), e
-                );
-            }
-        }
-
-        final Class<? extends Item> itemTypeForLambda = detectedType;
 
         validateField(field);
 
+        Class<? extends Item> itemType = (Class<? extends Item>) field.getType();
+
         try {
-            Supplier<Item> supplier = getItemSupplier(field, itemTypeForLambda);
-
+            Supplier<Item> supplier = getItemSupplier(field, itemType);
             register(itemName, supplier);
-
         } catch (IllegalAccessException e) {
             throw new BeaconReflectionException("Cannot access @RegisterItem field: " + field.getName(), e);
         }

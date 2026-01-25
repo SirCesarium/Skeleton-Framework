@@ -45,8 +45,8 @@ public class DevMod {
     @RegisterBlock(value = "test_block_without_item")
     public static Block TEST_BLOCK_WITHOUT_ITEM;
 
-    @RegisterItem(value = "my_custom_item", type = CustomItem.class)
-    public static Item MY_CUSTOM_ITEM;
+    @RegisterItem(value = "my_custom_item")
+    public static CustomItem MY_CUSTOM_ITEM;
 
     @RegisterItem("test")
     @WithItemProps
